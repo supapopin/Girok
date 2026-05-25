@@ -1,0 +1,79 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Data Accessors
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Validation Blueprints
+    function isValidCategory(data) {
+      return data.keys().hasAll(['id', 'userId', 'name'])
+        && data.keys().size() <= 4
+        && data.id is string && data.id.size() <= 128
+        && data.userId == request.auth.uid
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 100
+        && (!('isDefault' in data) || data.isDefault is bool);
+    }
+
+    function isValidNote(data) {
+      return data.keys().hasAll(['id', 'userId', 'date', 'lastModifiedAt', 'categoryId', 'textContent'])
+        && data.keys().size() <= 8
+        && data.id is string && data.id.size() <= 128
+        && data.userId == request.auth.uid
+        && data.date is int
+        && data.lastModifiedAt is int
+        && data.categoryId is string && data.categoryId.size() <= 128
+        && data.textContent is string && data.textContent.size() <= 500000
+        && (!('categoryName' in data) || (data.categoryName is string && data.categoryName.size() <= 100))
+        && (!('photoUrls' in data) || (data.photoUrls is list && data.photoUrls.size() <= 50));
+    }
+
+    // Collection Rules
+    match /users/{userId} {
+      // Sub-collections
+      match /categories/{categoryId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(categoryId);
+        allow create: if isOwner(userId) && isValidId(categoryId) && isValidCategory(incoming());
+        allow update: if isOwner(userId) && isValidId(categoryId) && isValidCategory(incoming())
+          && incoming().id == existing().id
+          && incoming().userId == existing().userId;
+        allow delete: if isOwner(userId) && isValidId(categoryId);
+      }
+
+      match /notes/{noteId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(noteId);
+        allow create: if isOwner(userId) && isValidId(noteId) && isValidNote(incoming());
+        allow update: if isOwner(userId) && isValidId(noteId) && isValidNote(incoming())
+          && incoming().id == existing().id
+          && incoming().userId == existing().userId
+          && incoming().date == existing().date;
+        allow delete: if isOwner(userId) && isValidId(noteId);
+      }
+    }
+  }
+}

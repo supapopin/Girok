@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Girok - 기록</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            background-color: #f8fafc;
+        }
+        /* Force app font even when pasting external content */
+        .ql-editor *, .ql-editor {
+            font-family: 'Inter', 'Noto Sans KR', sans-serif !important;
+        }
+        .ql-editor {
+            font-size: 1rem;
+            line-height: 1.6;
+            outline: none;
+        }
+        /* Handle font sizes from execCommand */
+        .ql-editor font[size="1"] { font-size: 0.6em; }
+        .ql-editor font[size="2"] { font-size: 0.8em; }
+        .ql-editor font[size="3"] { font-size: 1em; }
+        .ql-editor font[size="4"] { font-size: 1.2em; }
+        .ql-editor font[size="5"] { font-size: 1.5em; }
+        .ql-editor font[size="6"] { font-size: 2em; }
+        .ql-editor font[size="7"] { font-size: 3em; }
+        /* Allow specific heading sizes if needed, otherwise keep it unified */
+        .ql-editor h1 { font-size: 1.5em !important; }
+        .ql-editor h2 { font-size: 1.25em !important; }
+
+        /* Fix lists and blockquotes */
+        .ql-editor ul, .ql-preview ul {
+            list-style-type: disc !important;
+            padding-left: 1.5rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+        .ql-editor ol, .ql-preview ol {
+            list-style-type: decimal !important;
+            padding-left: 1.5rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+        .ql-editor ol ol, .ql-preview ol ol {
+            list-style-type: lower-alpha !important;
+        }
+        .ql-editor ol ol ol, .ql-preview ol ol ol {
+            list-style-type: lower-roman !important;
+        }
+        .ql-editor ol ol ol ol, .ql-preview ol ol ol ol {
+            list-style-type: decimal !important;
+        }
+        .ql-editor blockquote, .ql-preview blockquote {
+            border-left: none !important;
+            padding-left: 2.5rem !important;
+            font-style: normal !important;
+            color: inherit !important;
+            margin: 0.5rem 0 !important;
+            background-color: transparent !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+        /* Quote style - explicitly marked with is-quote class */
+        .ql-editor blockquote.is-quote, .ql-preview blockquote.is-quote {
+            border-left: 4px solid #cbd5e1 !important;
+            padding-left: 1rem !important;
+            font-style: italic !important;
+            color: #64748b !important;
+            background-color: #f8fafc !important;
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+        /* Nested blockquotes for deeper indentation */
+        .ql-editor blockquote blockquote, .ql-preview blockquote blockquote {
+            padding-left: 2.5rem !important;
+            margin: 0 !important;
+        }
+        .ql-editor li, .ql-preview li {
+            margin-bottom: 0.25rem !important;
+        }
+
+        /* Hide scrollbars but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="text-slate-800">
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

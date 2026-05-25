@@ -1,0 +1,46 @@
+{
+  "entities": {
+    "Category": {
+      "title": "Category",
+      "description": "User defined category for organizing notes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique category ID" },
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "name": { "type": "string", "description": "Category name" },
+        "isDefault": { "type": "boolean", "description": "Whether it's a default category" }
+      },
+      "required": ["id", "userId", "name"]
+    },
+    "Note": {
+      "title": "Note",
+      "description": "User journal entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique note ID" },
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "date": { "type": "number", "description": "Creation timestamp" },
+        "lastModifiedAt": { "type": "number", "description": "Last modified timestamp" },
+        "categoryId": { "type": "string", "description": "Associated category ID" },
+        "categoryName": { "type": "string", "description": "Snapshot of category name" },
+        "textContent": { "type": "string", "description": "HTML content of the note" },
+        "photoUrls": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of photo URLs"
+        }
+      },
+      "required": ["id", "userId", "date", "lastModifiedAt", "categoryId", "textContent"]
+    }
+  },
+  "firestore": {
+    "users/{userId}/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Collection of categories owned by a user"
+    },
+    "users/{userId}/notes/{noteId}": {
+      "schema": "Note",
+      "description": "Collection of notes owned by a user"
+    }
+  }
+}

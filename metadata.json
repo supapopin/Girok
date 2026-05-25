@@ -1,0 +1,8 @@
+{
+  "name": "Girok (기록) - Personal Journal",
+  "description": "A quiet, private thinking space for personal journaling and reflection. Minimalist design with rich text editing, category management, and photo attachments.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
