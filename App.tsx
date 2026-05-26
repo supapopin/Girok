@@ -80,7 +80,9 @@ const App: React.FC = () => {
 
     checkLayout();
     window.addEventListener('resize', checkLayout);
-      
+    
+    console.log("CURRENT URL:", window.location.href);
+    
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
       console.log("AUTH STATE:", firebaseUser);
 
