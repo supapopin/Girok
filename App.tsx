@@ -1,3 +1,5 @@
+// App.tsx
+
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Note, Category, Language, SortOption, UserProfile } from './types';
 import { TRANSLATIONS, DEFAULT_CATEGORIES, UI_MESSAGES } from './constants';
@@ -82,8 +84,9 @@ const App: React.FC = () => {
         setUser(null);
         setNotes([]);
         setCategories([]);
-        setIsLoading(false);
       }
+
+      setIsLoading(false);
     });
 
     return () => {
@@ -299,6 +302,14 @@ const App: React.FC = () => {
       setDeleteConfirmId(null);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
 
   if (!user && !isLoading) {
     return (
