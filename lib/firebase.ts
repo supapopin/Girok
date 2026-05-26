@@ -19,6 +19,7 @@ const firebaseConfig = {
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
+console.log(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN)
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
@@ -84,6 +85,10 @@ export const getCategoriesPath = (uid: string) => `users/${uid}/categories`;
 export const getNotesCollection = (uid: string) => collection(db, getNotesPath(uid));
 export const getCategoriesCollection = (uid: string) => collection(db, getCategoriesPath(uid));
 
-export const initializeAuth = async () => {
-  await setPersistence(auth, browserLocalPersistence);
-};
+setPersistence(auth, browserLocalPersistence)
+  .then(() => {
+    console.log("Persistence enabled");
+  })
+  .catch((err) => {
+    console.error(err);
+  });
