@@ -1,5 +1,15 @@
 // App.tsx
-
+import {
+  auth,
+  db,
+  loginWithGoogle,
+  logout,
+  getNotesCollection,
+  getCategoriesCollection,
+  handleFirestoreError,
+  OperationType,
+  initializeAuth
+} from './lib/firebase';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Note, Category, Language, SortOption, UserProfile } from './types';
 import { TRANSLATIONS, DEFAULT_CATEGORIES, UI_MESSAGES } from './constants';
@@ -11,7 +21,6 @@ import Toast from './components/Toast';
 import Lightbox from './components/Lightbox';
 import FocusModal from './components/FocusModal';
 import ConfirmModal from './components/ConfirmModal';
-import { auth, db, loginWithGoogle, logout, getNotesCollection, getCategoriesCollection, handleFirestoreError, OperationType } from './lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { onSnapshot, doc, setDoc, deleteDoc, writeBatch, collection, query, orderBy, limit } from 'firebase/firestore';
 
@@ -64,35 +73,39 @@ const App: React.FC = () => {
 
   // 1. Layout and Auth State
   useEffect(() => {
-    const checkLayout = () => {
-      const width = window.innerWidth;
-      setIsMobile(width < 768);
-      setIsOverlay(width < 1280);
+      const init = async () => {
+        await initializeAuth();
+
+      const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+        console.log("AUTH STATE:", firebaseUser);
+
+        if (firebaseUser) {
+          setUser({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName,
+            photoURL: firebaseUser.photoURL
+          })  ;
+        } else {
+          setUser(null);
+          setNotes([]);
+          setCategories([]);
+        }
+
+        setIsLoading(false);
+      });
+
+      return unsubscribeAuth;
     };
-    checkLayout();
-    window.addEventListener('resize', checkLayout);
 
-    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
-      console.log("AUTH STATE:", firebaseUser);
-      if (firebaseUser) {
-        setUser({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-          photoURL: firebaseUser.photoURL
-        });
-      } else {
-        setUser(null);
-        setNotes([]);
-        setCategories([]);
-      }
+    let unsubscribe: (() => void) | undefined;
 
-      setIsLoading(false);
+    init().then((u) => {
+      unsubscribe = u;
     });
 
     return () => {
-      window.removeEventListener('resize', checkLayout);
-      unsubscribeAuth();
+      if (unsubscribe) unsubscribe();
     };
   }, []);
 

@@ -84,4 +84,6 @@ export const getCategoriesPath = (uid: string) => `users/${uid}/categories`;
 export const getNotesCollection = (uid: string) => collection(db, getNotesPath(uid));
 export const getCategoriesCollection = (uid: string) => collection(db, getCategoriesPath(uid));
 
-await setPersistence(auth, browserLocalPersistence);
+export const initializeAuth = async () => {
+  await setPersistence(auth, browserLocalPersistence);
+};
