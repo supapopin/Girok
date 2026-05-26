@@ -73,6 +73,7 @@ const App: React.FC = () => {
     window.addEventListener('resize', checkLayout);
 
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+      console.log("AUTH STATE:", firebaseUser);
       if (firebaseUser) {
         setUser({
           uid: firebaseUser.uid,

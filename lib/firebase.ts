@@ -1,12 +1,16 @@
 // firebase.ts
 
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithRedirect, onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, query, where, onSnapshot, getDocFromServer } from 'firebase/firestore';
 import {
-  browserLocalPersistence,
-  setPersistence
+  getAuth,
+  GoogleAuthProvider,
+  signInWithRedirect,
+  signOut,
+  setPersistence,
+  browserLocalPersistence
 } from 'firebase/auth';
+
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -81,4 +85,5 @@ export const getCategoriesPath = (uid: string) => `users/${uid}/categories`;
 export const getNotesCollection = (uid: string) => collection(db, getNotesPath(uid));
 export const getCategoriesCollection = (uid: string) => collection(db, getCategoriesPath(uid));
 
-setPersistence(auth, browserLocalPersistence);
+setPersistence(auth, browserLocalPersistence)
+  .catch(console.error);
