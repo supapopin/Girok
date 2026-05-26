@@ -7,8 +7,7 @@ import {
   getNotesCollection,
   getCategoriesCollection,
   handleFirestoreError,
-  OperationType,
-  initializeAuth
+  OperationType
 } from './lib/firebase';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Note, Category, Language, SortOption, UserProfile } from './types';
@@ -72,40 +71,38 @@ const App: React.FC = () => {
   const msg = UI_MESSAGES[lang];
 
   // 1. Layout and Auth State
-  useEffect(() => {
-      const init = async () => {
-        await initializeAuth();
-
-      const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
-        console.log("AUTH STATE:", firebaseUser);
-
-        if (firebaseUser) {
-          setUser({
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            displayName: firebaseUser.displayName,
-            photoURL: firebaseUser.photoURL
-          })  ;
-        } else {
-          setUser(null);
-          setNotes([]);
-          setCategories([]);
-        }
-
-        setIsLoading(false);
-      });
-
-      return unsubscribeAuth;
+    useEffect(() => {
+    const checkLayout = () => {
+      const width = window.innerWidth;
+      setIsMobile(width < 768);
+      setIsOverlay(width < 1280);
     };
 
-    let unsubscribe: (() => void) | undefined;
+    checkLayout();
+    window.addEventListener('resize', checkLayout);
+      
+    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+      console.log("AUTH STATE:", firebaseUser);
 
-    init().then((u) => {
-      unsubscribe = u;
+      if (firebaseUser) {
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName,
+          photoURL: firebaseUser.photoURL
+        });
+      } else {
+        setUser(null);
+        setNotes([]);
+        setCategories([]);
+      }
+
+      setIsLoading(false);
     });
 
     return () => {
-      if (unsubscribe) unsubscribe();
+      window.removeEventListener('resize', checkLayout);
+      unsubscribeAuth();
     };
   }, []);
 

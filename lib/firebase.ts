@@ -1,7 +1,5 @@
-// firebase.ts
-
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, query, where, onSnapshot, getDocFromServer } from 'firebase/firestore';
+import { getFirestore, collection } from 'firebase/firestore';
 import {
   getAuth,
   GoogleAuthProvider,
@@ -19,12 +17,39 @@ const firebaseConfig = {
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
-console.log(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN)
+
+console.log("AUTH DOMAIN:", import.meta.env.VITE_FIREBASE_AUTH_DOMAIN);
 
 const app = initializeApp(firebaseConfig);
+
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+
+setPersistence(auth, browserLocalPersistence)
+  .then(() => {
+    console.log("Persistence enabled");
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+
+console.log("AUTH DOMAIN:", import.meta.env.VITE_FIREBASE_AUTH_DOMAIN);
+
 export const googleProvider = new GoogleAuthProvider();
+
+export const loginWithGoogle = () =>
+  signInWithRedirect(auth, googleProvider);
+
+export const logout = () => signOut(auth);
+
+export const getNotesPath = (uid: string) => `users/${uid}/notes`;
+export const getCategoriesPath = (uid: string) => `users/${uid}/categories`;
+
+export const getNotesCollection = (uid: string) =>
+  collection(db, getNotesPath(uid));
+
+export const getCategoriesCollection = (uid: string) =>
+  collection(db, getCategoriesPath(uid));
 
 // Error Handling
 export enum OperationType {
@@ -47,13 +72,17 @@ export interface FirestoreErrorInfo {
     isAnonymous?: boolean | null;
     tenantId?: string | null;
     providerInfo?: {
-      providerId?: string | null;
+      providerId?: string |null;
       email?: string | null;
     }[];
-  }
+  };
 }
 
-export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+export function handleFirestoreError(
+  error: unknown,
+  operationType: OperationType,
+  path: string | null
+) {
   const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
     authInfo: {
@@ -62,33 +91,16 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
       emailVerified: auth.currentUser?.emailVerified,
       isAnonymous: auth.currentUser?.isAnonymous,
       tenantId: auth.currentUser?.tenantId,
-      providerInfo: auth.currentUser?.providerData?.map(provider => ({
-        providerId: provider.providerId,
-        email: provider.email,
-      })) || []
+      providerInfo:
+        auth.currentUser?.providerData?.map((provider) => ({
+          providerId: provider.providerId,
+          email: provider.email,
+        })) || [],
     },
     operationType,
-    path
-  }
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
+    path,
+  };
+
+  console.error('Firestore Error:', JSON.stringify(errInfo));
   throw new Error(JSON.stringify(errInfo));
 }
-
-// Auth Helper
-export const loginWithGoogle = () => signInWithRedirect(auth, googleProvider);
-export const logout = () => signOut(auth);
-
-// Firestore Helpers
-export const getNotesPath = (uid: string) => `users/${uid}/notes`;
-export const getCategoriesPath = (uid: string) => `users/${uid}/categories`;
-
-export const getNotesCollection = (uid: string) => collection(db, getNotesPath(uid));
-export const getCategoriesCollection = (uid: string) => collection(db, getCategoriesPath(uid));
-
-setPersistence(auth, browserLocalPersistence)
-  .then(() => {
-    console.log("Persistence enabled");
-  })
-  .catch((err) => {
-    console.error(err);
-  });
