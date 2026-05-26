@@ -11,7 +11,6 @@ import {
   browserLocalPersistence
 } from 'firebase/auth';
 
-
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -85,5 +84,4 @@ export const getCategoriesPath = (uid: string) => `users/${uid}/categories`;
 export const getNotesCollection = (uid: string) => collection(db, getNotesPath(uid));
 export const getCategoriesCollection = (uid: string) => collection(db, getCategoriesPath(uid));
 
-setPersistence(auth, browserLocalPersistence)
-  .catch(console.error);
+await setPersistence(auth, browserLocalPersistence);
