@@ -1,6 +1,6 @@
 
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithRedirect, onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, query, where, onSnapshot, getDocFromServer } from 'firebase/firestore';
 import { Note, Category } from '../types';
 
@@ -67,7 +67,7 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
 }
 
 // Auth Helper
-export const loginWithGoogle = () => signInWithPopup(auth, googleProvider);
+export const loginWithGoogle = () => signInWithRedirect(auth, googleProvider);
 export const logout = () => signOut(auth);
 
 // Firestore Helpers
